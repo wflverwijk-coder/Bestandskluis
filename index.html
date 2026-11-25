@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f4">
+  <title>Bestandskluis — jouw bestanden, op één plek</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="translations.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Bestandskluis" data-i18n-aria-label="brandName">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4.5 6.75A2.25 2.25 0 0 1 6.75 4.5h3.1l1.8 2h5.6A2.25 2.25 0 0 1 19.5 8.75v8.5a2.25 2.25 0 0 1-2.25 2.25h-10.5A2.25 2.25 0 0 1 4.5 17.25z"/><path d="M4.75 9h14.5"/></svg>
+        </span>
+        <span class="brand-name" data-i18n="brandName">Bestandskluis</span>
+      </a>
+
+      <div class="sidebar-label" data-i18n="workspace">JOUW WERKPLEK</div>
+      <nav class="navigation" aria-label="Hoofdnavigatie">
+        <a class="nav-link active" href="#bestanden">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.75A2.25 2.25 0 0 1 6.75 4.5h3.1l1.8 2h5.6A2.25 2.25 0 0 1 19.5 8.75v8.5a2.25 2.25 0 0 1-2.25 2.25h-10.5A2.25 2.25 0 0 1 4.5 17.25z"/><path d="M4.75 9h14.5"/></svg>
+          <span data-i18n="myFiles">Mijn bestanden</span>
+        </a>
+      </nav>
+      <label class="language-picker">
+        <span class="sr-only" data-i18n="language">Taal</span>
+        <select id="language-select" aria-label="Taal"></select>
+      </label>
+
+      <div class="sidebar-bottom">
+        <div class="growth-card">
+          <span class="growth-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+          </span>
+          <p class="growth-title" data-i18n="growthTitle">Ruimte die meegroeit</p>
+          <p class="growth-copy" data-i18n="growthCopy">Elke maand krijg je er automatisch 5 plekken bij.</p>
+          <span id="next-growth" class="growth-date" data-i18n="growthDate">Je ruimte groeit vanzelf</span>
+        </div>
+        <div class="local-note"><span class="status-dot"></span><span id="storage-mode" data-i18n="localOnly">Alleen opgeslagen op dit apparaat</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb"><span data-i18n="breadcrumb">Werkplek</span><span class="breadcrumb-slash">/</span><strong data-i18n="myFiles">Mijn bestanden</strong></div>
+        <div class="profile">
+          <span class="profile-avatar" aria-hidden="true">B</span>
+          <span class="profile-name" id="profile-name" data-i18n="vault">Mijn kluis</span>
+          <button class="button button-account" id="account-button" type="button" data-i18n="signIn">Inloggen</button>
+        </div>
+      </header>
+
+      <section class="page-content" id="bestanden">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow" data-i18n="personalStorage">JOUW PERSOONLIJKE OPSLAG</p>
+            <h1><span data-i18n="headline">Alles op z'n plek</span><span class="heading-period">.</span></h1>
+            <p class="subtitle" data-i18n="subtitle">Bewaar je bestanden veilig en vind ze in een oogwenk terug.</p>
+          </div>
+          <button class="button button-primary" id="upload-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"/></svg>
+            <span data-i18n="addFiles">Bestanden toevoegen</span>
+          </button>
+          <input id="file-input" type="file" multiple hidden>
+        </div>
+
+        <section class="storage-card" aria-label="Opslagruimte">
+          <div class="storage-top">
+            <div class="storage-heading">
+              <span class="storage-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4.5 6.75A2.25 2.25 0 0 1 6.75 4.5h3.1l1.8 2h5.6A2.25 2.25 0 0 1 19.5 8.75v8.5a2.25 2.25 0 0 1-2.25 2.25h-10.5A2.25 2.25 0 0 1 4.5 17.25z"/><path d="M4.75 9h14.5"/></svg>
+              </span>
+              <div>
+                <h2 data-i18n="storageTitle">Jouw opslagruimte</h2>
+                <p id="growth-copy" data-i18n="capacityStart">Je begint met 100 bestandsplekken.</p>
+              </div>
+            </div>
+            <div class="capacity"><strong id="file-count">0</strong><span> / </span><span id="file-limit">100</span><span class="capacity-label" data-i18n="filesLabel">bestanden</span></div>
+          </div>
+          <div class="progress-track" role="progressbar" aria-label="Gebruikte bestandsplekken" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="storage-bottom">
+            <span id="remaining-count">Nog 100 plekken beschikbaar</span>
+            <span class="monthly-bonus"><span aria-hidden="true">↗</span> <span data-i18n="monthlyBonus">+5 plekken per maand</span></span>
+          </div>
+        </section>
+
+        <div class="files-heading">
+          <div>
+            <h2 data-i18n="filesHeading">Je bestanden</h2>
+            <p id="file-summary">Je bestanden staan hier overzichtelijk bij elkaar.</p>
+          </div>
+          <label class="search-box">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 4 4"/></svg>
+            <input id="search-input" type="search" placeholder="Zoek op bestandsnaam..." autocomplete="off" aria-label="Zoek op bestandsnaam" data-i18n-placeholder="searchPlaceholder" data-i18n-aria-label="searchPlaceholder">
+            <kbd>/</kbd>
+          </label>
+        </div>
+
+        <div class="file-area" id="file-area">
+          <div class="empty-state" id="empty-state">
+            <span class="empty-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M5 4.75h9l5 5v9.5a.75.75 0 0 1-.75.75h-12.5a.75.75 0 0 1-.75-.75v-13.75A.75.75 0 0 1 5 4.75Z"/><path d="M14 5v5h5m-7 2v6m-3-3 3-3 3 3"/></svg>
+            </span>
+            <h3 id="empty-title" data-i18n="emptyTitle">Je kluis is nog leeg</h3>
+            <p id="empty-copy" data-i18n="emptyLocal">Voeg je eerste bestanden toe. Ze blijven op dit apparaat bewaard.</p>
+            <button class="button button-secondary" id="empty-upload" type="button" data-i18n="chooseFiles">Kies bestanden</button>
+          </div>
+          <div class="table-wrap" id="table-wrap" hidden>
+            <table>
+              <thead>
+                <tr><th data-i18n="name">NAAM</th><th data-i18n="size">BESTANDSGROOTTE</th><th data-i18n="added">TOEGEVOEGD</th><th><span class="sr-only" data-i18n="actions">Acties</span></th></tr>
+              </thead>
+              <tbody id="file-list"></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="privacy-note" id="privacy-note"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg><span data-i18n="privacyLocal">Je bestanden worden privé op dit apparaat bewaard.</span></p>
+        <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="account-dialog" id="account-dialog" aria-labelledby="account-title">
+    <form class="account-form" id="account-form">
+      <button class="dialog-close" id="account-close" type="button" aria-label="Sluiten" data-i18n-aria-label="close">×</button>
+      <p class="eyebrow" data-i18n="accountEyebrow">JOUW BESTANDEN, OVERAL</p>
+      <h2 id="account-title" data-i18n="loginTitle">Inloggen op je kluis</h2>
+      <p class="dialog-copy" id="account-description" data-i18n="loginCopy">Log in om je bestanden veilig online te bewaren en vanaf andere apparaten te openen.</p>
+      <p class="config-notice" id="config-notice" hidden data-i18n="configNotice">Cloudinlog is nog niet ingesteld. Vul de Supabase-project-URL en publieke anon/publishable key in bovenaan index.html in, voer supabase-setup.sql uit en zet e-mailbevestiging aan bij de Supabase Auth-instellingen.</p>
+      <label class="form-field" for="auth-email"><span data-i18n="email">E-mailadres</span>
+        <input id="auth-email" type="email" autocomplete="email" placeholder="jij@voorbeeld.nl" required data-i18n-placeholder="emailPlaceholder">
+      </label>
+      <label class="form-field" for="auth-password"><span data-i18n="password">Wachtwoord</span>
+        <input id="auth-password" type="password" autocomplete="current-password" placeholder="Minimaal 8 tekens" required data-i18n-placeholder="passwordPlaceholder">
+      </label>
+      <button class="button button-primary auth-submit" id="auth-submit" type="submit" data-i18n="signIn">Inloggen</button>
+      <button class="auth-switch" id="auth-switch" type="button" data-i18n="switchSignup">Nog geen account? Maak er een aan</button>
+      <p class="auth-feedback" id="auth-feedback" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <script>
+    (() => {
+      // Vul deze waarden in met de project-URL en publieke anon/publishable key uit Supabase.
+      const SUPABASE_URL = "https://txlmevctbdpsckquhitx.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_UfTFrOAFnInXlfnDoY2pyw_Liuqwzxs";
+      const STORAGE_BUCKET = "user-files";
+      const DB_NAME = "bestandskluis";
+      const DB_VERSION = 1;
+      const STORE_NAME = "files";
+      const START_DATE_KEY = "bestandskluis-startdatum";
+      const INITIAL_LIMIT = 100;
+      const MONTHLY_INCREASE = 5;
+
+      const fileInput = document.getElementById("file-input");
+      const uploadButton = document.getElementById("upload-button");
+      const emptyUpload = document.getElementById("empty-upload");
+      const searchInput = document.getElementById("search-input");
+      const fileList = document.getElementById("file-list");
+      const tableWrap = document.getElementById("table-wrap");
+      const emptyState = document.getElementById("empty-state");
+      const statusMessage = document.getElementById("status-message");
+      const accountButton = document.getElementById("account-button");
+      const accountDialog = document.getElementById("account-dialog");
+      const accountForm = document.getElementById("account-form");
+      const authEmail = document.getElementById("auth-email");
+      const authPassword = document.getElementById("auth-password");
+      const authSubmit = document.getElementById("auth-submit");
+      const authSwitch = document.getElementById("auth-switch");
+      const authFeedback = document.getElementById("auth-feedback");
+      const configNotice = document.getElementById("config-notice");
+      const languageSelect = document.getElementById("language-select");
+      const i18n = window.BESTANDSKLUIS_I18N;
+      let db;
+      let files = [];
+      let messageTimer;
+      let supabaseClient = null;
+      let currentUser = null;
+      let accountCreatedAt = null;
+      let authMode = "signin";
+      let lastHandledSession;
+      let currentLanguage;
+
+      function getPreferredLanguage() {
+        const saved = localStorage.getItem("bestandskluis-language");
+        if (saved && i18n.locales.some(locale => locale.code === saved)) return saved;
+        for (const candidate of navigator.languages || [navigator.language]) {
+          const exact = i18n.locales.find(locale => locale.code.toLowerCase() === candidate.toLowerCase());
+          if (exact) return exact.code;
+          const base = candidate.split("-")[0].toLowerCase();
+          const matching = i18n.locales.find(locale => locale.code.split("-")[0].toLowerCase() === base);
+          if (matching) return matching.code;
+        }
+        return "nl";
+      }
+
+      function translate(key) {
+        return i18n.translations[currentLanguage][key] || i18n.translations.en[key] || key;
+      }
+
+      function applyLanguage() {
+        const locale = i18n.locales.find(item => item.code === currentLanguage);
+        document.documentElement.lang = locale.intl;
+        document.documentElement.dir = locale.direction;
+        document.title = translate("pageTitle");
+        document.querySelectorAll("[data-i18n]").forEach(element => {
+          element.textContent = translate(element.dataset.i18n);
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+          element.placeholder = translate(element.dataset.i18nPlaceholder);
+        });
+        document.querySelectorAll("[data-i18n-aria-label]").forEach(element => {
+          element.setAttribute("aria-label", translate(element.dataset.i18nAriaLabel));
+        });
+        updateAccountUi();
+        setAuthMode(authMode);
+        if (db) render();
+      }
+
+      function initializeLanguagePicker() {
+        currentLanguage = getPreferredLanguage();
+        for (const locale of i18n.locales) {
+          const option = document.createElement("option");
+          option.value = locale.code;
+          option.textContent = locale.name;
+          languageSelect.append(option);
+        }
+        languageSelect.value = currentLanguage;
+        languageSelect.addEventListener("change", () => {
+          currentLanguage = languageSelect.value;
+          localStorage.setItem("bestandskluis-language", currentLanguage);
+          applyLanguage();
+        });
+        applyLanguage();
+      }
+
+      function openDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onupgradeneeded = () => {
+            const database = request.result;
+            if (!database.objectStoreNames.contains(STORE_NAME)) {
+              database.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error || new Error("De bestandsopslag kon niet worden geopend."));
+        });
+      }
+
+      function getLocalFiles() {
+        return new Promise((resolve, reject) => {
+          const request = db.transaction(STORE_NAME, "readonly").objectStore(STORE_NAME).getAll();
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error || new Error("De bestanden konden niet worden geladen."));
+        });
+      }
+
+      function saveLocalFile(file) {
+        return new Promise((resolve, reject) => {
+          const request = db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).add({
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            addedAt: new Date().toISOString(),
+            blob: file
+          });
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error || new Error(`"${file.name}" kon niet worden opgeslagen.`));
+        });
+      }
+
+      function markLocalFileSynced(file) {
+        return new Promise((resolve, reject) => {
+          const request = db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).put({
+            ...file,
+            syncedUserId: currentUser.id
+          });
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error || new Error(`"${file.name}" kon niet als gesynchroniseerd worden gemarkeerd.`));
+        });
+      }
+
+      function getCapacity() {
+        let start;
+        if (accountCreatedAt) {
+          start = new Date(accountCreatedAt);
+        } else {
+          let startDate = localStorage.getItem(START_DATE_KEY);
+          if (!startDate) {
+            startDate = new Date().toISOString();
+            localStorage.setItem(START_DATE_KEY, startDate);
+          }
+          start = new Date(startDate);
+        }
+        const now = new Date();
+        let months = (now.getFullYear() - start.getFullYear()) * 12 + now.getMonth() - start.getMonth();
+        if (now.getDate() < start.getDate()) months -= 1;
+        return { limit: INITIAL_LIMIT + Math.max(0, months) * MONTHLY_INCREASE, months, start };
+      }
+
+      function updateAccountUi() {
+        const signedIn = Boolean(currentUser);
+        accountButton.textContent = translate(signedIn ? "signOut" : "signIn");
+        document.getElementById("profile-name").textContent = signedIn ? currentUser.email : translate("vault");
+        document.querySelector(".profile-avatar").textContent = signedIn && currentUser.email
+          ? currentUser.email.charAt(0).toUpperCase()
+          : "B";
+        document.getElementById("storage-mode").textContent = signedIn
+          ? translate("cloudSync")
+          : translate("localOnly");
+        document.querySelector("#privacy-note span").textContent = signedIn
+          ? translate("privacyCloud")
+          : translate("privacyLocal");
+      }
+
+      function setAuthMode(mode) {
+        authMode = mode;
+        const signingUp = mode === "signup";
+        document.getElementById("account-title").textContent = signingUp ? translate("createAccount") : translate("loginTitle");
+        document.getElementById("account-description").textContent = signingUp
+          ? translate("signupCopy")
+          : translate("loginCopy");
+        authSubmit.textContent = signingUp ? translate("createAccount") : translate("signIn");
+        authPassword.autocomplete = signingUp ? "new-password" : "current-password";
+        authPassword.minLength = signingUp ? 8 : 1;
+        authSwitch.textContent = signingUp
+          ? translate("switchSignin")
+          : translate("switchSignup");
+        authFeedback.textContent = "";
+      }
+
+      function setAuthAvailability(available, message) {
+        configNotice.hidden = available;
+        if (message) configNotice.textContent = message;
+        authEmail.disabled = !available;
+        authPassword.disabled = !available;
+        authSubmit.disabled = !available;
+        authSwitch.disabled = !available;
+      }
+
+      function loadSupabaseSdk() {
+        if (window.supabase && window.supabase.createClient) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+          script.onload = () => {
+            if (window.supabase && window.supabase.createClient) resolve();
+            else reject(new Error("De Supabase-bibliotheek kon niet worden geladen."));
+          };
+          script.onerror = () => reject(new Error("Supabase kon niet worden geladen. Controleer je internetverbinding en laad de pagina opnieuw."));
+          document.head.append(script);
+        });
+      }
+
+      function showMessage(text, isError) {
+        statusMessage.textContent = text;
+        statusMessage.classList.toggle("error", Boolean(isError));
+        statusMessage.classList.add("visible");
+        clearTimeout(messageTimer);
+        messageTimer = setTimeout(() => statusMessage.classList.remove("visible"), 5000);
+      }
+
+      function showAuthFeedback(text, isError) {
+        authFeedback.textContent = text;
+        authFeedback.classList.toggle("error", Boolean(isError));
+      }
+
+      function formatSize(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+      }
+
+      function formatDate(dateString) {
+        const locale = i18n.locales.find(item => item.code === currentLanguage).intl;
+        return new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(new Date(dateString));
+      }
+
+      function fileIcon(name) {
+        const ext = name.includes(".") ? name.split(".").pop().toLowerCase() : "";
+        if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext)) return ["image", "IMG"];
+        if (["pdf"].includes(ext)) return ["pdf", "PDF"];
+        if (["doc", "docx", "odt", "txt", "rtf"].includes(ext)) return ["text", "DOC"];
+        if (["xls", "xlsx", "csv"].includes(ext)) return ["sheet", "XLS"];
+        if (["zip", "rar", "7z", "tar"].includes(ext)) return ["archive", "ZIP"];
+        return ["generic", ext ? ext.slice(0, 3).toUpperCase() : "FILE"];
+      }
+
+      async function loadCloudFiles() {
+        const { data, error } = await supabaseClient
+          .from("files")
+          .select("id, name, size, mime_type, object_path, source_local_id, created_at")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        return data.map(file => ({
+          id: file.id,
+          name: file.name,
+          size: Number(file.size),
+          type: file.mime_type,
+          objectPath: file.object_path,
+          sourceLocalId: file.source_local_id === null ? null : Number(file.source_local_id),
+          addedAt: file.created_at
+        }));
+      }
+
+      async function uploadCloudFile(file, sourceLocalId) {
+        const objectPath = `${currentUser.id}/${crypto.randomUUID()}`;
+        const { error: uploadError } = await supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .upload(objectPath, file, { contentType: file.type || "application/octet-stream" });
+        if (uploadError) throw uploadError;
+
+        const { error: insertError } = await supabaseClient
+          .from("files")
+          .insert({
+            user_id: currentUser.id,
+            name: file.name,
+            size: file.size,
+            mime_type: file.type || "",
+            object_path: objectPath,
+            source_local_id: sourceLocalId === undefined ? null : sourceLocalId
+          });
+        if (insertError) {
+          const { error: cleanupError } = await supabaseClient.storage.from(STORAGE_BUCKET).remove([objectPath]);
+          if (cleanupError) {
+            throw new Error(`${insertError.message} Het tijdelijke bestand kon ook niet worden opgeruimd: ${cleanupError.message}`);
+          }
+          throw insertError;
+        }
+      }
+
+      async function importLocalFiles() {
+        const localFiles = await getLocalFiles();
+        const pending = localFiles.filter(file =>
+          file.syncedUserId !== currentUser.id &&
+          !files.some(cloudFile => cloudFile.sourceLocalId === file.id)
+        );
+        if (!pending.length || !confirm(`Er staan ${pending.length} bestand${pending.length === 1 ? "" : "en"} op dit apparaat. Wil je die naar je account kopiëren zodat je ze ook op andere apparaten kunt openen?`)) {
+          return;
+        }
+
+        let imported = 0;
+        for (const file of pending) {
+          if (files.length >= getCapacity().limit) {
+            showMessage(translate("capacityFull"), true);
+            break;
+          }
+          try {
+            await uploadCloudFile(file.blob, file.id);
+            files = await loadCloudFiles();
+            await markLocalFileSynced(file);
+            imported += 1;
+            render();
+          } catch (error) {
+            showMessage(error.message || ` "${file.name}" kon niet naar je account worden gekopieerd.`, true);
+            break;
+          }
+        }
+        if (imported > 0) {
+          showMessage(`${imported} ${translate("filesLabel")} ${translate("cloudSync").toLocaleLowerCase(i18n.locales.find(item => item.code === currentLanguage).intl)}.`);
+        }
+      }
+
+      async function applySession(session) {
+        const user = session ? session.user : null;
+        const userId = user ? user.id : null;
+        if (lastHandledSession === userId) return;
+        lastHandledSession = userId;
+        currentUser = user;
+        accountCreatedAt = user ? user.created_at : null;
+        updateAccountUi();
+
+        try {
+          files = user ? await loadCloudFiles() : await getLocalFiles();
+          render();
+          if (user) await importLocalFiles();
+        } catch (error) {
+          lastHandledSession = undefined;
+          showMessage(error.message || translate("accountFilesFailed"), true);
+        }
+      }
+
+      function render() {
+        const locale = i18n.locales.find(item => item.code === currentLanguage).intl;
+        const query = searchInput.value.trim().toLocaleLowerCase(locale);
+        const capacity = getCapacity();
+        const visibleFiles = files
+          .filter(file => file.name.toLocaleLowerCase("nl").includes(query))
+          .sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+        const count = files.length;
+        const remaining = Math.max(0, capacity.limit - count);
+        const percent = capacity.limit ? Math.min(100, Math.round(count / capacity.limit * 100)) : 0;
+
+        document.getElementById("file-count").textContent = count;
+        document.getElementById("file-limit").textContent = capacity.limit;
+        document.getElementById("remaining-count").textContent = `${remaining} ${translate("filesLabel")}`;
+        document.getElementById("growth-copy").textContent = capacity.months === 0
+          ? translate("capacityStart")
+          : translate("growthCopy");
+        document.getElementById("progress-fill").style.width = `${percent}%`;
+        const progress = document.getElementById("progress-bar");
+        progress.setAttribute("aria-valuemax", capacity.limit);
+        progress.setAttribute("aria-valuenow", count);
+        document.getElementById("file-summary").textContent = count === 0
+          ? translate("filesSummaryEmpty")
+          : `${count} ${translate("filesLabel")}`;
+        document.getElementById("next-growth").textContent = translate("monthlyBonus");
+
+        fileList.replaceChildren();
+        for (const file of visibleFiles) {
+          const row = document.createElement("tr");
+          const [iconClass, label] = fileIcon(file.name);
+          const nameCell = document.createElement("td");
+          const fileName = document.createElement("div");
+          fileName.className = "file-name";
+          const icon = document.createElement("span");
+          icon.className = `file-icon ${iconClass}`;
+          icon.textContent = label;
+          const name = document.createElement("span");
+          name.className = "file-name-text";
+          name.textContent = file.name;
+          name.title = file.name;
+          fileName.append(icon, name);
+          nameCell.append(fileName);
+
+          const sizeCell = document.createElement("td");
+          sizeCell.className = "muted-cell";
+          sizeCell.textContent = formatSize(file.size);
+          const dateCell = document.createElement("td");
+          dateCell.className = "muted-cell";
+          dateCell.textContent = formatDate(file.addedAt);
+
+          const actionCell = document.createElement("td");
+          actionCell.className = "action-cell";
+          const download = document.createElement("button");
+          download.type = "button";
+          download.className = "icon-button";
+          download.setAttribute("aria-label", `${translate("download")} ${file.name}`);
+          download.title = translate("download");
+          download.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4"/><path d="M5 16v3a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3"/></svg>';
+          download.addEventListener("click", async () => {
+            try {
+              let url;
+              if (file.objectPath) {
+                const { data, error } = await supabaseClient.storage
+                  .from(STORAGE_BUCKET)
+                  .createSignedUrl(file.objectPath, 60, { download: file.name });
+                if (error) throw error;
+                url = data.signedUrl;
+              } else {
+                url = URL.createObjectURL(file.blob);
+              }
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = file.name;
+              link.rel = "noopener";
+              link.click();
+              if (!file.objectPath) setTimeout(() => URL.revokeObjectURL(url), 1000);
+            } catch (error) {
+              showMessage(error.message || `"${file.name}" kon niet worden geopend.`, true);
+            }
+          });
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "icon-button delete-button";
+          remove.setAttribute("aria-label", `${translate("remove")} ${file.name}`);
+          remove.title = translate("remove");
+          remove.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7h15m-13.5 0 .8 12h10.4L18 7M9 7V4.5h6V7m-5 3v6m4-6v6"/></svg>';
+          remove.addEventListener("click", async () => {
+            try {
+              if (file.objectPath) {
+                const { error: storageError } = await supabaseClient.storage.from(STORAGE_BUCKET).remove([file.objectPath]);
+                if (storageError) throw storageError;
+                const { error: metadataError } = await supabaseClient.from("files").delete().eq("id", file.id);
+                if (metadataError) throw metadataError;
+                files = await loadCloudFiles();
+              } else {
+                const request = db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).delete(file.id);
+                await new Promise((resolve, reject) => {
+                  request.onsuccess = () => resolve();
+                  request.onerror = () => reject(request.error || new Error("Het bestand kon niet worden verwijderd."));
+                });
+                files = await getLocalFiles();
+              }
+              render();
+              showMessage(`${file.name}: ${translate("remove")}.`);
+            } catch (error) {
+              showMessage(error.message || "Verwijderen is niet gelukt.", true);
+            }
+          });
+          actionCell.append(download, remove);
+          row.append(nameCell, sizeCell, dateCell, actionCell);
+          fileList.append(row);
+        }
+
+        const hasFiles = count > 0;
+        tableWrap.hidden = !hasFiles || visibleFiles.length === 0;
+        emptyState.hidden = hasFiles && visibleFiles.length > 0;
+        if (hasFiles && visibleFiles.length === 0) {
+          document.getElementById("empty-title").textContent = translate("noResults");
+          document.getElementById("empty-copy").textContent = `${translate("noResultsCopy")} "${searchInput.value.trim()}".`;
+          emptyUpload.hidden = true;
+        } else if (!hasFiles) {
+          document.getElementById("empty-title").textContent = translate("emptyTitle");
+          document.getElementById("empty-copy").textContent = currentUser
+            ? translate("emptyCloud")
+            : translate("emptyLocal");
+          emptyUpload.hidden = false;
+        }
+      }
+
+      async function addFiles(fileCollection) {
+        const selected = Array.from(fileCollection);
+        if (!selected.length) return;
+        let added = 0;
+        let failureMessage = "";
+        const capacity = getCapacity();
+        for (const file of selected) {
+          if (files.length >= capacity.limit) {
+            failureMessage = `Je kluis zit vol. Je kunt maximaal ${capacity.limit} bestanden bewaren.`;
+            break;
+          }
+          try {
+            if (currentUser) {
+              await uploadCloudFile(file);
+              files = await loadCloudFiles();
+            } else {
+              await saveLocalFile(file);
+              files = await getLocalFiles();
+            }
+            added += 1;
+          } catch (error) {
+            failureMessage = !currentUser && error.name === "QuotaExceededError"
+              ? "De browseropslag op dit apparaat is vol. Maak ruimte vrij en probeer opnieuw."
+              : error.message || `"${file.name}" kon niet worden opgeslagen.`;
+            break;
+          }
+        }
+        render();
+        if (added > 0) {
+          showMessage(`${added} ${added === 1 ? "bestand is" : "bestanden zijn"} toegevoegd aan je kluis.`);
+        }
+        if (failureMessage) showMessage(failureMessage, true);
+        fileInput.value = "";
+      }
+
+      initializeLanguagePicker();
+      uploadButton.addEventListener("click", () => fileInput.click());
+      emptyUpload.addEventListener("click", () => fileInput.click());
+      fileInput.addEventListener("change", event => addFiles(event.target.files));
+      searchInput.addEventListener("input", render);
+      accountButton.addEventListener("click", async () => {
+        if (currentUser && supabaseClient) {
+          try {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) throw error;
+          } catch (error) {
+            showMessage(error.message || "Uitloggen is niet gelukt.", true);
+          }
+          return;
+        }
+        setAuthMode("signin");
+        const configured = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+        setAuthAvailability(configured && Boolean(supabaseClient));
+        if (!configured) {
+          configNotice.textContent = translate("configNotice");
+        }
+        accountDialog.showModal();
+      });
+      document.getElementById("account-close").addEventListener("click", () => accountDialog.close());
+      accountDialog.addEventListener("click", event => {
+        if (event.target === accountDialog) accountDialog.close();
+      });
+      authSwitch.addEventListener("click", () => setAuthMode(authMode === "signin" ? "signup" : "signin"));
+      accountForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!supabaseClient) return;
+        authSubmit.disabled = true;
+        showAuthFeedback("");
+        try {
+          const credentials = { email: authEmail.value.trim(), password: authPassword.value };
+          const signupOptions = {};
+          if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+            signupOptions.emailRedirectTo = `${window.location.origin}${window.location.pathname}`;
+          }
+          const result = authMode === "signup"
+            ? await supabaseClient.auth.signUp({
+                ...credentials,
+                options: signupOptions
+              })
+            : await supabaseClient.auth.signInWithPassword(credentials);
+          if (result.error) {
+            if (result.error.code === "email_not_confirmed") {
+              throw new Error(translate("verifiedRequired"));
+            }
+            throw result.error;
+          }
+          if (authMode === "signup" && !result.data.session) {
+            showAuthFeedback(`${translate("verificationSent")} ${credentials.email}`);
+          } else {
+            accountDialog.close();
+          }
+        } catch (error) {
+          showAuthFeedback(error.message || translate("signInFailed"), true);
+        } finally {
+          authSubmit.disabled = false;
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "/" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
+          event.preventDefault();
+          searchInput.focus();
+        }
+        if (event.key === "Escape" && document.activeElement === searchInput) {
+          searchInput.value = "";
+          render();
+          searchInput.blur();
+        }
+      });
+
+      const fileArea = document.getElementById("file-area");
+      fileArea.addEventListener("dragover", event => {
+        event.preventDefault();
+        fileArea.classList.add("drag-over");
+      });
+      fileArea.addEventListener("dragleave", event => {
+        if (!fileArea.contains(event.relatedTarget)) fileArea.classList.remove("drag-over");
+      });
+      fileArea.addEventListener("drop", event => {
+        event.preventDefault();
+        fileArea.classList.remove("drag-over");
+        addFiles(event.dataTransfer.files);
+      });
+
+      (async () => {
+        try {
+          db = await openDatabase();
+          files = await getLocalFiles();
+          getCapacity();
+          updateAccountUi();
+          render();
+        } catch (error) {
+          showMessage(error.message || "De bestandskluis kon niet worden gestart.", true);
+          document.getElementById("empty-title").textContent = "Opslag niet beschikbaar";
+          document.getElementById("empty-copy").textContent = "Deze browser kan de lokale bestandsopslag niet openen.";
+          return;
+        }
+
+        const configured = SUPABASE_URL !== "YOUR_SUPABASE_URL" && SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
+        if (!configured) return;
+        try {
+          await loadSupabaseSdk();
+          supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          setAuthAvailability(true);
+          const { data, error } = await supabaseClient.auth.getSession();
+          if (error) throw error;
+          await applySession(data.session);
+          supabaseClient.auth.onAuthStateChange((_event, session) => {
+            setTimeout(() => {
+              applySession(session);
+            }, 0);
+          });
+        } catch (error) {
+          supabaseClient = null;
+          setAuthAvailability(false, error.message || "De Supabase-verbinding kon niet worden gestart.");
+          showMessage(error.message || "De accountverbinding kon niet worden gestart.", true);
+        }
+      })();
+    })();
+  </script>
+</body>
+</html>
